@@ -1,0 +1,23 @@
+{
+  "id": "gh-ssnit-2026-01",
+  "kind": "ssnit",
+  "effective_from": "2026-01-01",
+  "description": "Pension contributions under the National Pensions Act, 2008 (Act 766): 18.5% of basic salary (worker 5.5%, employer 13%), of which 13.5% goes to SSNIT (Tier 1) and 5% to the Tier 2 occupational scheme. Monthly insurable earnings between GHS 587.80 and GHS 69,000.00 for 2026.",
+  "sources": [
+    {
+      "title": "SSNIT Public Notice: Maximum and Minimum Insurable Earnings for 2026 (13 January 2026)",
+      "url": "https://www.ssnit.org.gh/wp-content/uploads/2026/01/Public-Notice-Min-Max-Insurable.pdf",
+      "retrieved": "2026-10-16"
+    },
+    {
+      "title": "SSNIT FAQ: The new pension scheme (worker 5.5%, employer 13%, total 18.5%; 13.5% to SSNIT, 5% to Tier 2)",
+      "url": "https://www.ssnit.org.gh/faq/the-new-pension-scheme",
+      "retrieved": "2026-10-16"
+    }
+  ],
+  "employee_bp": 550,
+  "employer_bp": 1300,
+  "tier2_bp": 500,
+  "min_insurable": 58780,
+  "max_insurable": 6900000
+}

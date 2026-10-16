@@ -1,0 +1,4 @@
+employee_id,basic_salary,taxable_allowances,non_taxable_allowances,bonus,overtime,gross_cash_pay,benefits_in_kind,ssnit_employee,ssnit_employer,ssnit_tier1,ssnit_tier2,chargeable_income,paye,bonus_tax,overtime_tax,total_tax,tier3,other_deductions,net_pay,employer_cost
+"E001",5000.00,1000.00,0.00,0.00,0.00,6000.00,0.00,275.00,650.00,675.00,250.00,5725.00,1035.75,0.00,0.00,1035.75,0.00,0.00,4689.25,6650.00
+"E002",1200.00,0.00,0.00,0.00,400.00,1600.00,0.00,66.00,156.00,162.00,60.00,1134.00,78.05,0.00,20.00,98.05,0.00,0.00,1435.95,1756.00
+"E003",25000.00,0.00,0.00,30000.00,0.00,55000.00,0.00,1375.00,3250.00,3375.00,1250.00,23625.00,5708.60,1500.00,0.00,7208.60,0.00,500.00,45916.40,58250.00

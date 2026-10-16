@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">How the Ghana Payroll API calculates a payslip</title>
+  <desc id="d">The pay period picks the official GRA and SSNIT rate tables. SSNIT is taken from basic salary, bonus and overtime get their own rates, chargeable income goes through the PAYE bands, and the result is net pay with every step shown.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6b6a64"/></marker>
+    <style>
+      .box{fill:#fff;stroke:#d8d5cb;stroke-width:1.5}
+      .key{fill:#e8f3ee;stroke:#0b6e4f;stroke-width:1.5}
+      .src{fill:#fff6e0;stroke:#d9b45a;stroke-width:1.5}
+      .h{font-size:15px;font-weight:700;fill:#1d1d1b}
+      .s{font-size:12px;fill:#55544e}
+      .l{stroke:#6b6a64;stroke-width:1.5;fill:none;marker-end:url(#a)}
+    </style>
+  </defs>
+  <rect width="960" height="360" fill="#f7f6f2"/>
+
+  <rect class="box" x="20" y="40" width="170" height="110" rx="10"/>
+  <text class="h" x="35" y="68">Your request</text>
+  <text class="s" x="35" y="90">period 2026-10</text>
+  <text class="s" x="35" y="108">basic, allowances</text>
+  <text class="s" x="35" y="126">bonus, overtime, reliefs</text>
+  <text class="s" x="35" y="144">(all in pesewas)</text>
+
+  <rect class="src" x="20" y="200" width="170" height="120" rx="10"/>
+  <text class="h" x="35" y="228">Rate tables</text>
+  <text class="s" x="35" y="250">GRA Act 1178 (Sep 2026)</text>
+  <text class="s" x="35" y="268">SSNIT 2026 limits</text>
+  <text class="s" x="35" y="286">picked by pay period;</text>
+  <text class="s" x="35" y="304">none found → 422</text>
+
+  <rect class="box" x="240" y="40" width="190" height="110" rx="10"/>
+  <text class="h" x="255" y="68">SSNIT</text>
+  <text class="s" x="255" y="90">on basic, 587.80–69,000</text>
+  <text class="s" x="255" y="108">employee 5.5%, employer 13%</text>
+  <text class="s" x="255" y="126">Tier 1 13.5% → SSNIT</text>
+  <text class="s" x="255" y="144">Tier 2 5% → trustee</text>
+
+  <rect class="box" x="240" y="200" width="190" height="120" rx="10"/>
+  <text class="h" x="255" y="228">Bonus &amp; overtime</text>
+  <text class="s" x="255" y="250">bonus 5% up to 15% of</text>
+  <text class="s" x="255" y="268">annual basic, rest is income</text>
+  <text class="s" x="255" y="286">overtime 5% / 10% for</text>
+  <text class="s" x="255" y="304">junior staff</text>
+
+  <rect class="box" x="480" y="110" width="200" height="140" rx="10"/>
+  <text class="h" x="495" y="138">Chargeable income</text>
+  <text class="s" x="495" y="162">basic + allowances</text>
+  <text class="s" x="495" y="180">+ benefits in kind</text>
+  <text class="s" x="495" y="198">− employee SSNIT</text>
+  <text class="s" x="495" y="216">− Tier 3 relief (≤16.5%)</text>
+  <text class="s" x="495" y="234">− approved reliefs</text>
+
+  <rect class="box" x="730" y="40" width="210" height="110" rx="10"/>
+  <text class="h" x="745" y="68">PAYE bands</text>
+  <text class="s" x="745" y="90">0% · 5% · 10% · 17.5%</text>
+  <text class="s" x="745" y="108">25% · 30% · 35% over 50,000</text>
+  <text class="s" x="745" y="126">rounded per band</text>
+  <text class="s" x="745" y="144">to the pesewa</text>
+
+  <rect class="key" x="730" y="200" width="210" height="120" rx="10"/>
+  <text class="h" x="745" y="228">Payslip</text>
+  <text class="s" x="745" y="250">net pay, employer cost</text>
+  <text class="s" x="745" y="268">what to remit to GRA,</text>
+  <text class="s" x="745" y="286">SSNIT and Tier 2</text>
+  <text class="s" x="745" y="304">+ every step + sources</text>
+
+  <path class="l" d="M190 95H236"/>
+  <path class="l" d="M105 200V154"/>
+  <path class="l" d="M190 260H236"/>
+  <path class="l" d="M430 95C455 95 455 150 476 150"/>
+  <path class="l" d="M430 260C455 260 455 215 476 215"/>
+  <path class="l" d="M680 150C705 150 705 95 726 95"/>
+  <path class="l" d="M835 150V196"/>
+  <text class="s" x="480" y="30" font-weight="600" fill="#0b6e4f">Every figure comes back with its working</text>
+</svg>

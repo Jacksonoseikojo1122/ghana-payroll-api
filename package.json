@@ -1,0 +1,35 @@
+{
+  "name": "ghana-payroll-api",
+  "version": "0.1.0",
+  "description": "PAYE, SSNIT and net pay for Ghana, calculated exactly from official GRA and SSNIT rate tables, with the working shown line by line.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jacksonoseikojo1122/ghana-payroll-api.git"
+  },
+  "homepage": "https://jacksonkojoosei.com/projects/ghana-payroll-api",
+  "author": "Jackson Kojo Osei <jacksonoseikojo@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.5",
+    "hono": "^4.13.13",
+    "pg": "^8.23.1",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

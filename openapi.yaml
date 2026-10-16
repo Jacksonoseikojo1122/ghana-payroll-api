@@ -1,0 +1,276 @@
+openapi: 3.1.0
+info:
+  title: Ghana Payroll API
+  version: 0.1.0
+  summary: PAYE, SSNIT and net pay for Ghana from official GRA and SSNIT rate tables, with the working shown.
+  description: |
+    All money is integer pesewas (GHS 1.00 = 100). Rates are basis points (17.5% = 1750).
+    The pay period picks the rate tables; periods with no official table return 422 `no_rate_table`.
+    Calculation endpoints are open. Payroll runs are stored and need `Authorization: Bearer <key>`
+    when the server sets PAYROLL_API_KEYS.
+  contact:
+    name: Jackson Kojo Osei
+    url: https://jacksonkojoosei.com/projects/ghana-payroll-api
+  license: { name: MIT, identifier: MIT }
+servers:
+  - url: http://localhost:8788
+paths:
+  /v1/payslip:
+    post:
+      summary: Calculate one employee's payslip for a month
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PayslipInput" }
+            example:
+              period: "2026-10"
+              basic_salary: 500000
+              allowances: [{ name: Transport, amount: 100000 }]
+      responses:
+        "200": { description: Payslip, content: { application/json: { schema: { $ref: "#/components/schemas/Payslip" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/NoRateTable" }
+  /v1/gross-up:
+    post:
+      summary: Find the smallest basic salary that gives at least a target net pay
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/EmployeeFields"
+                - type: object
+                  required: [period, target_net_pay]
+                  properties:
+                    period: { $ref: "#/components/schemas/Period" }
+                    target_net_pay: { $ref: "#/components/schemas/Amount" }
+            example: { period: "2026-10", target_net_pay: 500000 }
+      responses:
+        "200":
+          description: Basic salary and the resulting payslip
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  basic_salary: { $ref: "#/components/schemas/Amount" }
+                  payslip: { $ref: "#/components/schemas/Payslip" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/NoRateTable" }
+  /v1/rates:
+    get:
+      summary: Rate tables, all of them or the ones in force on a date
+      parameters:
+        - { name: date, in: query, schema: { type: string, format: date }, example: "2026-10-31" }
+      responses:
+        "200": { description: "With `date`: `{date, paye, ssnit}`. Without: `{paye: [...], ssnit: [...]}`" }
+        "422": { $ref: "#/components/responses/NoRateTable" }
+  /v1/payroll-runs:
+    post:
+      summary: Calculate and store a whole payroll
+      security: [{ bearer: [] }]
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, maxLength: 128 }
+          description: "Same key and same body returns the stored run (200, `Idempotent-Replayed: true`). Same key, different body is 409."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [period, employees]
+              properties:
+                period: { $ref: "#/components/schemas/Period" }
+                employees:
+                  type: array
+                  minItems: 1
+                  maxItems: 1000
+                  items:
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeFields"
+                      - type: object
+                        required: [employee_id, basic_salary]
+                        properties:
+                          employee_id: { type: string, maxLength: 64 }
+                          basic_salary: { $ref: "#/components/schemas/Amount" }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Run" } } } }
+        "200": { description: Replayed (same Idempotency-Key and body), content: { application/json: { schema: { $ref: "#/components/schemas/Run" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { description: Missing or invalid API key }
+        "409": { description: Idempotency-Key already used with a different body }
+        "422": { $ref: "#/components/responses/NoRateTable" }
+  /v1/payroll-runs/{id}:
+    get:
+      summary: A stored payroll run
+      security: [{ bearer: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: Run, content: { application/json: { schema: { $ref: "#/components/schemas/Run" } } } }
+        "404": { description: Not found (or created with another key) }
+  /v1/payroll-runs/{id}/payslips.csv:
+    get:
+      summary: The run as CSV, one row per employee, amounts in GHS
+      security: [{ bearer: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: CSV, content: { text/csv: {} } }
+        "404": { description: Not found }
+  /health:
+    get:
+      summary: Liveness, database check and loaded rate tables
+      responses: { "200": { description: OK } }
+components:
+  securitySchemes:
+    bearer: { type: http, scheme: bearer }
+  responses:
+    BadRequest:
+      description: Invalid input, with the path of each problem
+      content:
+        application/json:
+          example: { error: Invalid request, issues: [{ path: basic_salary, message: "Amounts are whole pesewas, e.g. GHS 1,234.50 is 123450" }] }
+    NoRateTable:
+      description: No official rate table for that period
+      content:
+        application/json:
+          example: { error: "No official PAYE table is loaded for 2026-08-01. The earliest one starts on 2026-09-01.", code: no_rate_table }
+  schemas:
+    Amount: { type: integer, minimum: 0, maximum: 100000000000, description: "Pesewas. 500000 = GHS 5,000.00" }
+    Period: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$", example: "2026-10" }
+    Item:
+      type: object
+      required: [name, amount]
+      properties:
+        name: { type: string, maxLength: 80 }
+        amount: { $ref: "#/components/schemas/Amount" }
+    EmployeeFields:
+      type: object
+      properties:
+        residency: { type: string, enum: [resident, non_resident], default: resident }
+        employment: { type: string, enum: [regular, casual], default: regular }
+        allowances:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/Item"
+              - type: object
+                properties: { taxable: { type: boolean, default: true } }
+        benefits_in_kind: { type: array, items: { $ref: "#/components/schemas/Item" }, description: Taxed but not paid in cash }
+        bonus: { $ref: "#/components/schemas/Amount" }
+        bonus_paid_earlier_this_year: { $ref: "#/components/schemas/Amount" }
+        annual_basic_salary: { $ref: "#/components/schemas/Amount", description: "Defaults to basic × 12; sets the 15% bonus limit" }
+        overtime: { $ref: "#/components/schemas/Amount" }
+        annual_qualifying_income: { $ref: "#/components/schemas/Amount", description: "Defaults to (basic + taxable allowances) × 12; overtime rates need ≤ GHS 18,000" }
+        ssnit_member: { type: boolean, default: true }
+        tier3_contribution: { $ref: "#/components/schemas/Amount", description: "Deducted in full; relieved up to 16.5% of basic" }
+        reliefs: { type: array, items: { $ref: "#/components/schemas/Item" }, description: Approved reliefs, monthly amounts }
+        deductions: { type: array, items: { $ref: "#/components/schemas/Item" }, description: After-tax deductions such as loans }
+    PayslipInput:
+      allOf:
+        - $ref: "#/components/schemas/EmployeeFields"
+        - type: object
+          required: [period, basic_salary]
+          properties:
+            period: { $ref: "#/components/schemas/Period" }
+            basic_salary: { $ref: "#/components/schemas/Amount" }
+    Payslip:
+      type: object
+      properties:
+        period: { type: string }
+        rate_tables:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              effective_from: { type: string, format: date }
+              sources: { type: array, items: { type: object, properties: { title: { type: string }, url: { type: string } } } }
+        earnings:
+          type: object
+          properties:
+            basic_salary: { type: integer }
+            taxable_allowances: { type: integer }
+            non_taxable_allowances: { type: integer }
+            bonus: { type: integer }
+            overtime: { type: integer }
+            gross_cash_pay: { type: integer }
+            benefits_in_kind: { type: integer }
+        ssnit:
+          type: object
+          properties:
+            insurable_earnings: { type: integer }
+            employee: { type: integer, description: "5.5%" }
+            employer: { type: integer, description: "13%" }
+            total: { type: integer }
+            tier1: { type: integer, description: "13.5%, to SSNIT" }
+            tier2: { type: integer, description: "5%, to the Tier 2 trustee" }
+        tax:
+          type: object
+          properties:
+            method: { type: string, enum: [graduated, non_resident_flat, casual_flat] }
+            employment_income: { type: integer }
+            chargeable_income: { type: integer }
+            paye: { type: integer }
+            bonus_tax: { type: integer }
+            overtime_tax: { type: integer }
+            total: { type: integer }
+            bands:
+              type: array
+              items:
+                type: object
+                properties:
+                  from: { type: integer }
+                  to: { type: [integer, "null"] }
+                  rate_bp: { type: integer }
+                  taxed: { type: integer }
+                  tax: { type: integer }
+        deductions:
+          type: object
+          properties:
+            ssnit_employee: { type: integer }
+            tier3: { type: integer }
+            tax: { type: integer }
+            other: { type: integer }
+            total: { type: integer }
+        net_pay: { type: integer }
+        employer_cost: { type: integer }
+        working:
+          type: array
+          items:
+            type: object
+            properties:
+              step: { type: string }
+              amount: { type: integer }
+              working: { type: string, example: "5.5% of 5,000.00, deducted from pay" }
+        warnings: { type: array, items: { type: string } }
+    Run:
+      type: object
+      properties:
+        id: { type: string }
+        created_at: { type: string, format: date-time }
+        period: { type: string }
+        totals:
+          type: object
+          properties:
+            employees: { type: integer }
+            gross_cash_pay: { type: integer }
+            paye: { type: integer }
+            total_tax: { type: integer }
+            ssnit_employee: { type: integer }
+            ssnit_employer: { type: integer }
+            ssnit_tier1: { type: integer }
+            ssnit_tier2: { type: integer }
+            net_pay: { type: integer }
+            employer_cost: { type: integer }
+        payslips:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/Payslip"
+              - type: object
+                properties: { employee_id: { type: string } }

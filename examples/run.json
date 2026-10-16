@@ -1,0 +1,8 @@
+{
+  "period": "2026-10",
+  "employees": [
+    { "employee_id": "E001", "basic_salary": 500000, "allowances": [{ "name": "Transport", "amount": 100000 }] },
+    { "employee_id": "E002", "basic_salary": 120000, "overtime": 40000 },
+    { "employee_id": "E003", "basic_salary": 2500000, "bonus": 3000000, "deductions": [{ "name": "Staff loan", "amount": 50000 }] }
+  ]
+}

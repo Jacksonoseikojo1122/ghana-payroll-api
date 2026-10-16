@@ -1,0 +1,13 @@
+# Free Render web service. Set DATABASE_URL (free Postgres on Render or Neon) so stored
+# payroll runs survive restarts, and PAYROLL_API_KEYS to protect them.
+services:
+  - type: web
+    name: ghana-payroll-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PAYROLL_API_KEYS
+        sync: false

@@ -1,0 +1,47 @@
+{
+  "id": "gh-paye-2026-09",
+  "kind": "paye",
+  "effective_from": "2026-09-01",
+  "description": "Resident individual income tax bands from the Income Tax (Amendment) Act, 2026 (Act 1178), plus the PAYE rules GRA publishes for bonus, overtime, non-residents and casual workers.",
+  "sources": [
+    {
+      "title": "GRA: Amendments - Income Tax Act, 2026 (Act 1178). Effective September 1, 2026",
+      "url": "https://gra.gov.gh/wp-content/uploads/2026/09/Amendments-To-The-Income-Tax-2015-Act-896_Updated-1.pdf",
+      "retrieved": "2026-10-16"
+    },
+    {
+      "title": "GRA: Pay As You Earn (PAYE)",
+      "url": "https://gra.gov.gh/domestic-tax/tax-types/paye/",
+      "retrieved": "2026-10-16"
+    }
+  ],
+  "monthly_bands": [
+    { "width": 58800, "rate_bp": 0 },
+    { "width": 8000, "rate_bp": 500 },
+    { "width": 10000, "rate_bp": 1000 },
+    { "width": 290000, "rate_bp": 1750 },
+    { "width": 1600000, "rate_bp": 2500 },
+    { "width": 3033200, "rate_bp": 3000 },
+    { "width": null, "rate_bp": 3500 }
+  ],
+  "annual_bands": [
+    { "width": 705600, "rate_bp": 0 },
+    { "width": 96000, "rate_bp": 500 },
+    { "width": 120000, "rate_bp": 1000 },
+    { "width": 3480000, "rate_bp": 1750 },
+    { "width": 19200000, "rate_bp": 2500 },
+    { "width": 36398400, "rate_bp": 3000 },
+    { "width": null, "rate_bp": 3500 }
+  ],
+  "non_resident_rate_bp": 2500,
+  "non_resident_bonus_overtime_rate_bp": 2000,
+  "casual_rate_bp": 500,
+  "bonus": { "rate_bp": 500, "cap_of_annual_basic_bp": 1500 },
+  "overtime": {
+    "max_annual_qualifying_income": 1800000,
+    "low_rate_bp": 500,
+    "low_cap_of_monthly_basic_bp": 5000,
+    "high_rate_bp": 1000
+  },
+  "provident_relief_cap_of_basic_bp": 1650
+}

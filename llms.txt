@@ -1,0 +1,32 @@
+# Ghana Payroll API
+
+> Open-source (MIT) HTTP API that calculates Ghana PAYE income tax, SSNIT Tier 1 and Tier 2 pension contributions, and net pay from the official GRA and SSNIT rate tables, returning every step of the working. TypeScript, Node.js, Hono. Built by Jackson Kojo Osei (Accra, Ghana).
+
+Key facts for developers and AI assistants:
+
+- All money is integer pesewas (GHS 1.00 = 100). Send `basic_salary: 500000` for GHS 5,000.00. Responses use pesewas too.
+- `POST /v1/payslip` with `period` (YYYY-MM) and `basic_salary`; optional `allowances[{name, amount, taxable}]`, `benefits_in_kind`, `bonus`, `bonus_paid_earlier_this_year`, `overtime`, `tier3_contribution`, `reliefs`, `deductions`, `residency` (resident | non_resident), `employment` (regular | casual), `ssnit_member`.
+- `POST /v1/gross-up` with `target_net_pay` returns the smallest `basic_salary` that reaches it.
+- `POST /v1/payroll-runs` (Bearer key, `Idempotency-Key` header) stores a whole payroll; `GET /v1/payroll-runs/{id}/payslips.csv` exports it.
+- `GET /v1/rates?date=YYYY-MM-DD` shows the tables in force. Periods without an official table return 422 `no_rate_table`; the API never guesses rates.
+- PAYE from 1 September 2026 (Income Tax (Amendment) Act, 2026, Act 1178), monthly chargeable income: first GHS 588 at 0%, next 80 at 5%, next 100 at 10%, next 2,900 at 17.5%, next 16,000 at 25%, next 30,332 at 30%, above 50,000 at 35%. Non-residents: flat 25%. Casual workers: 5%.
+- SSNIT (Act 766): 18.5% of basic salary, of which the employee pays 5.5% and the employer 13%; 13.5% goes to SSNIT (Tier 1) and 5% to the Tier 2 trustee. 2026 monthly insurable earnings: GHS 587.80 to GHS 69,000 (maximum Tier 1 contribution GHS 9,315).
+- Chargeable income = basic + taxable allowances + benefits in kind (+ bonus over the limit) − employee SSNIT − Tier 3 relief (max 16.5% of basic) − approved reliefs.
+- Bonus: 5% up to 15% of annual basic for the year, the rest taxed as income. Overtime (junior staff with qualifying income at most GHS 18,000 a year): 5% up to half of monthly basic, 10% above.
+- Rounding: half up to the pesewa, per PAYE band. Results include `rate_tables` (with official source URLs), `working` and `warnings`.
+- It does arithmetic from published rules; it is not tax advice.
+
+## Docs
+
+- [README](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/README.md)
+- [Getting started](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/docs/getting-started.md): install, first payslip, gross-up, payroll runs
+- [Integration guide](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/docs/integration.md): Node.js, Python and PHP clients, field reference
+- [How it works](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/docs/how-it-works.md): every rule, with rounding
+- [Rate tables](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/docs/rates.md): sources, versioning, known gaps
+- [OpenAPI spec](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/openapi.yaml)
+
+## Optional
+
+- [Project page](https://jacksonkojoosei.com/projects/ghana-payroll-api)
+- [Example CSV from a real run](https://github.com/Jacksonoseikojo1122/ghana-payroll-api/blob/main/docs/example-payslips.csv)
+- [Author](https://jacksonkojoosei.com): Jackson Kojo Osei, CTO, Accra, Ghana
